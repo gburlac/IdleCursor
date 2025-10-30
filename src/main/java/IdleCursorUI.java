@@ -29,6 +29,7 @@ public class IdleCursorUI {
         JLabel positionLabel = new JLabel("Last position: (---, ---)");
         JLabel nextMoveLabel = new JLabel("Next move in: -- seconds");
         JLabel currentTimeLabel = new JLabel("Current time: --:--:--");
+        JLabel endTimeLabel = new JLabel("Actual end time: --:--:--");
 
         frame.add(delayLabel);
         frame.add(delayField);
@@ -44,6 +45,7 @@ public class IdleCursorUI {
         frame.add(positionLabel);
         frame.add(nextMoveLabel);
         frame.add(currentTimeLabel);
+        frame.add(endTimeLabel);
         frame.add(new JLabel());
         frame.add(statusLabel);
 
@@ -64,6 +66,9 @@ public class IdleCursorUI {
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
                 shouldStop = false;
+                long expectedEndMillis = System.currentTimeMillis() + totalRunMinutes * 60 * 1000L;
+                String expectedEnd = new SimpleDateFormat("HH:mm:ss").format(new Date(expectedEndMillis));
+                SwingUtilities.invokeLater(() -> endTimeLabel.setText("Actual end time: " + expectedEnd));
                 moverThread = new Thread(() -> {
                     try {
                         int totalRunSeconds = totalRunMinutes * 60;
@@ -99,6 +104,7 @@ public class IdleCursorUI {
                             stopButton.setEnabled(false);
                             timeLabel.setText("Time left: --:--:--");
                             nextMoveLabel.setText("Next move in: -- seconds");
+                            endTimeLabel.setText("Actual end time: --:--:--");
                         });
                     } catch (Exception ex) {
                         SwingUtilities.invokeLater(() -> {
@@ -107,6 +113,7 @@ public class IdleCursorUI {
                             stopButton.setEnabled(false);
                             timeLabel.setText("Time left: --:--:--");
                             nextMoveLabel.setText("Next move in: -- seconds");
+                            endTimeLabel.setText("Actual end time: --:--:--");
                         });
                     }
                 });
@@ -121,6 +128,7 @@ public class IdleCursorUI {
             statusLabel.setText("Stopping...");
             stopButton.setEnabled(false);
             startButton.setEnabled(true);
+            endTimeLabel.setText("Actual end time: --:--:--");
         });
 
         frame.setVisible(true);
